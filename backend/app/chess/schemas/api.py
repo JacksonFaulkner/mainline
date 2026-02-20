@@ -22,7 +22,9 @@ class APIModel(BaseModel):
 class ApiMessage(APIModel):
     """Simple success/failure response payload."""
 
-    ok: bool = Field(description="Whether the request completed successfully.", default=True)
+    ok: bool = Field(
+        description="Whether the request completed successfully.", default=True
+    )
     message: str | None = Field(
         default=None,
         description="Optional human-readable status message.",
@@ -138,7 +140,9 @@ def _normalize_uci_moves(value: object) -> list[str]:
     elif isinstance(value, list):
         raw_moves = value
     else:
-        raise ValueError("moves must be a space-separated string or a list of UCI moves")
+        raise ValueError(
+            "moves must be a space-separated string or a list of UCI moves"
+        )
 
     normalized: list[str] = []
     for move in raw_moves:
@@ -157,9 +161,15 @@ class OpeningMatch(APIModel):
     eco: str = Field(description="ECO code for the matched opening.")
     name: str = Field(description="Human-readable opening name.")
     ply: int = Field(description="Matched opening length in plies.")
-    pgn: str | None = Field(default=None, description="Canonical PGN move sequence for the opening.")
-    uci: str | None = Field(default=None, description="Canonical UCI move sequence for the opening.")
-    epd: str | None = Field(default=None, description="Terminal EPD position for the opening line.")
+    pgn: str | None = Field(
+        default=None, description="Canonical PGN move sequence for the opening."
+    )
+    uci: str | None = Field(
+        default=None, description="Canonical UCI move sequence for the opening."
+    )
+    epd: str | None = Field(
+        default=None, description="Terminal EPD position for the opening line."
+    )
 
 
 class OpeningContinuation(APIModel):
@@ -183,12 +193,24 @@ class OpeningContinuation(APIModel):
         pattern=r"^[a-h][1-8]$",
         description="Destination square for board arrow rendering.",
     )
-    rank: int = Field(ge=1, le=20, description="1-based ordering rank among continuations.")
-    color_slot: int = Field(ge=1, le=20, description="Color slot index for stable arrow coloring.")
-    eco: str | None = Field(default=None, description="Representative ECO code for this branch.")
-    name: str | None = Field(default=None, description="Representative opening name for this branch.")
-    ply: int | None = Field(default=None, description="Representative opening line ply for this branch.")
-    pgn: str | None = Field(default=None, description="Representative PGN for this branch.")
+    rank: int = Field(
+        ge=1, le=20, description="1-based ordering rank among continuations."
+    )
+    color_slot: int = Field(
+        ge=1, le=20, description="Color slot index for stable arrow coloring."
+    )
+    eco: str | None = Field(
+        default=None, description="Representative ECO code for this branch."
+    )
+    name: str | None = Field(
+        default=None, description="Representative opening name for this branch."
+    )
+    ply: int | None = Field(
+        default=None, description="Representative opening line ply for this branch."
+    )
+    pgn: str | None = Field(
+        default=None, description="Representative PGN for this branch."
+    )
 
 
 class OpeningDatabaseInfo(APIModel):
@@ -197,7 +219,9 @@ class OpeningDatabaseInfo(APIModel):
     source: Literal["missing", "starter", "full"] = Field(
         description="Resolved opening source. 'full' means at least one non-starter TSV file was loaded."
     )
-    file_count: int = Field(ge=0, description="Number of TSV files loaded for this lookup.")
+    file_count: int = Field(
+        ge=0, description="Number of TSV files loaded for this lookup."
+    )
 
 
 class OpeningLookupRequest(APIModel):
@@ -240,23 +264,33 @@ class OpeningLookupResponse(APIModel):
 class EngineLine(APIModel):
     """Single engine principal-variation line."""
 
-    pv: list[str] = Field(default_factory=list, description="Principal variation UCI moves.")
-    cp: int | None = Field(default=None, description="Centipawn score from side to move.")
-    mate: int | None = Field(default=None, description="Mate score in plies, if applicable.")
+    pv: list[str] = Field(
+        default_factory=list, description="Principal variation UCI moves."
+    )
+    cp: int | None = Field(
+        default=None, description="Centipawn score from side to move."
+    )
+    mate: int | None = Field(
+        default=None, description="Mate score in plies, if applicable."
+    )
 
 
 class GameAnalysisRequest(APIModel):
     """Optional overrides for analysis parameters."""
 
     fen: str | None = Field(default=None, description="Optional FEN override.")
-    depth: int | None = Field(default=None, ge=1, le=40, description="Optional search depth.")
+    depth: int | None = Field(
+        default=None, ge=1, le=40, description="Optional search depth."
+    )
     movetime_ms: int | None = Field(
         default=None,
         ge=25,
         le=10_000,
         description="Optional fixed search time in milliseconds.",
     )
-    multipv: int | None = Field(default=None, ge=1, le=10, description="Optional number of PV lines.")
+    multipv: int | None = Field(
+        default=None, ge=1, le=10, description="Optional number of PV lines."
+    )
 
 
 class GameAnalysisResponse(APIModel):
@@ -265,10 +299,14 @@ class GameAnalysisResponse(APIModel):
     ok: bool = Field(default=True)
     game_id: str = Field(description="Lichess game id.")
     fen: str = Field(description="Analyzed position in FEN format.")
-    side_to_move: Literal["white", "black"] = Field(description="Color to move in analyzed position.")
+    side_to_move: Literal["white", "black"] = Field(
+        description="Color to move in analyzed position."
+    )
     bestmove: str | None = Field(default=None, description="Best move in UCI notation.")
     evaluation: EngineLine = Field(description="Primary evaluation line.")
-    alternatives: list[EngineLine] = Field(default_factory=list, description="Additional PV lines.")
+    alternatives: list[EngineLine] = Field(
+        default_factory=list, description="Additional PV lines."
+    )
     analyzed_at: datetime = Field(description="UTC timestamp of analysis generation.")
 
 
@@ -379,10 +417,18 @@ class StockfishPVLine(APIModel):
 
     rank: int = Field(default=1, ge=1, le=10, description="PV rank where 1 is best.")
     arrow: StockfishArrow = Field(description="Top move arrow info for this PV.")
-    san: str | None = Field(default=None, description="Optional SAN for the top PV move.")
-    cp: int | None = Field(default=None, description="Centipawn score from side to move.")
-    mate: int | None = Field(default=None, description="Mate score in plies, if available.")
-    pv: list[str] = Field(default_factory=list, description="Principal variation UCI sequence.")
+    san: str | None = Field(
+        default=None, description="Optional SAN for the top PV move."
+    )
+    cp: int | None = Field(
+        default=None, description="Centipawn score from side to move."
+    )
+    mate: int | None = Field(
+        default=None, description="Mate score in plies, if available."
+    )
+    pv: list[str] = Field(
+        default_factory=list, description="Principal variation UCI sequence."
+    )
 
     @field_validator("pv", mode="before")
     @classmethod
@@ -398,12 +444,24 @@ class StockfishDepthUpdateEvent(APIModel):
     type: Literal["depth_update"] = "depth_update"
     analysis_id: str = Field(description="Server-generated analysis session id.")
     fen: str = Field(description="Analyzed position in FEN.")
-    side_to_move: Literal["white", "black"] = Field(description="Side to move in analyzed position.")
-    depth: int = Field(ge=1, le=60, description="Current completed depth for this update.")
-    seldepth: int | None = Field(default=None, ge=1, le=80, description="Selective depth, if available.")
-    multipv: int = Field(ge=1, le=10, description="Number of PV lines returned in this update.")
-    nps: int | None = Field(default=None, ge=0, description="Nodes per second, if available.")
-    nodes: int | None = Field(default=None, ge=0, description="Total searched nodes, if available.")
+    side_to_move: Literal["white", "black"] = Field(
+        description="Side to move in analyzed position."
+    )
+    depth: int = Field(
+        ge=1, le=60, description="Current completed depth for this update."
+    )
+    seldepth: int | None = Field(
+        default=None, ge=1, le=80, description="Selective depth, if available."
+    )
+    multipv: int = Field(
+        ge=1, le=10, description="Number of PV lines returned in this update."
+    )
+    nps: int | None = Field(
+        default=None, ge=0, description="Nodes per second, if available."
+    )
+    nodes: int | None = Field(
+        default=None, ge=0, description="Total searched nodes, if available."
+    )
     bestmove_uci: str | None = Field(
         default=None,
         min_length=4,
@@ -411,8 +469,12 @@ class StockfishDepthUpdateEvent(APIModel):
         pattern=UCI_MOVE_PATTERN,
         description="Current best move in UCI notation.",
     )
-    lines: list[StockfishPVLine] = Field(default_factory=list, description="Top principal variations.")
-    generated_at: datetime = Field(description="UTC timestamp when this update was emitted.")
+    lines: list[StockfishPVLine] = Field(
+        default_factory=list, description="Top principal variations."
+    )
+    generated_at: datetime = Field(
+        description="UTC timestamp when this update was emitted."
+    )
 
 
 class StockfishAnalysisCompleteEvent(APIModel):
@@ -421,7 +483,9 @@ class StockfishAnalysisCompleteEvent(APIModel):
     type: Literal["analysis_complete"] = "analysis_complete"
     analysis_id: str = Field(description="Server-generated analysis session id.")
     fen: str = Field(description="Analyzed position in FEN.")
-    final_depth: int = Field(ge=1, le=60, description="Last completed depth before completion.")
+    final_depth: int = Field(
+        ge=1, le=60, description="Last completed depth before completion."
+    )
     bestmove_uci: str | None = Field(
         default=None,
         min_length=4,
@@ -429,26 +493,38 @@ class StockfishAnalysisCompleteEvent(APIModel):
         pattern=UCI_MOVE_PATTERN,
         description="Final best move in UCI notation.",
     )
-    lines: list[StockfishPVLine] = Field(default_factory=list, description="Final top principal variations.")
-    reason: Literal["depth_reached", "movetime_elapsed", "client_cancelled", "engine_stopped"] = Field(
-        description="Terminal reason for stream completion."
+    lines: list[StockfishPVLine] = Field(
+        default_factory=list, description="Final top principal variations."
     )
-    generated_at: datetime = Field(description="UTC timestamp when completion event was emitted.")
+    reason: Literal[
+        "depth_reached", "movetime_elapsed", "client_cancelled", "engine_stopped"
+    ] = Field(description="Terminal reason for stream completion.")
+    generated_at: datetime = Field(
+        description="UTC timestamp when completion event was emitted."
+    )
 
 
 class StockfishAnalysisErrorEvent(APIModel):
     """Error event for SSE analysis stream failures."""
 
     type: Literal["analysis_error"] = "analysis_error"
-    analysis_id: str | None = Field(default=None, description="Analysis session id if available.")
+    analysis_id: str | None = Field(
+        default=None, description="Analysis session id if available."
+    )
     code: str = Field(description="Stable error code identifier.")
     message: str = Field(description="Human-readable error message.")
-    retryable: bool = Field(default=False, description="Whether client may retry with same parameters.")
-    generated_at: datetime = Field(description="UTC timestamp when error event was emitted.")
+    retryable: bool = Field(
+        default=False, description="Whether client may retry with same parameters."
+    )
+    generated_at: datetime = Field(
+        description="UTC timestamp when error event was emitted."
+    )
 
 
 StockfishStreamEvent = Annotated[
-    StockfishDepthUpdateEvent | StockfishAnalysisCompleteEvent | StockfishAnalysisErrorEvent,
+    StockfishDepthUpdateEvent
+    | StockfishAnalysisCompleteEvent
+    | StockfishAnalysisErrorEvent,
     Field(discriminator="type"),
 ]
 
@@ -487,19 +563,29 @@ class CommentaryAnalysisStreamRequest(APIModel):
 class CommentaryUsageStats(APIModel):
     """Optional Bedrock token usage stats attached to completion events."""
 
-    input_tokens: int | None = Field(default=None, ge=0, description="Input token count, if available.")
-    output_tokens: int | None = Field(default=None, ge=0, description="Output token count, if available.")
-    total_tokens: int | None = Field(default=None, ge=0, description="Total token count, if available.")
+    input_tokens: int | None = Field(
+        default=None, ge=0, description="Input token count, if available."
+    )
+    output_tokens: int | None = Field(
+        default=None, ge=0, description="Output token count, if available."
+    )
+    total_tokens: int | None = Field(
+        default=None, ge=0, description="Total token count, if available."
+    )
 
 
 class CommentaryTextDeltaEvent(APIModel):
     """Incremental text fragment emitted by Commentary stream."""
 
     type: Literal["commentary_text_delta"] = "commentary_text_delta"
-    analysis_id: str = Field(description="Server-generated Commentary analysis session id.")
+    analysis_id: str = Field(
+        description="Server-generated Commentary analysis session id."
+    )
     text_delta: str = Field(description="New text fragment emitted for this chunk.")
     text: str = Field(description="Accumulated text received so far.")
-    generated_at: datetime = Field(description="UTC timestamp when this text delta was emitted.")
+    generated_at: datetime = Field(
+        description="UTC timestamp when this text delta was emitted."
+    )
 
 
 class CommentaryConcreteIdea(APIModel):
@@ -612,7 +698,9 @@ class CommentaryStructuredCommentary(APIModel):
             raise ValueError("position_plan_title must be less than 5 words")
         return normalized
 
-    @field_validator("advantage_summary", "best_move_san", "best_move_reason", "danger_to_watch")
+    @field_validator(
+        "advantage_summary", "best_move_san", "best_move_reason", "danger_to_watch"
+    )
     @classmethod
     def normalize_text_fields(cls, value: str) -> str:
         normalized = " ".join(value.split())
@@ -636,7 +724,10 @@ class CommentaryStructuredCommentary(APIModel):
 
     @model_validator(mode="after")
     def validate_side_plan_bullets(self) -> "CommentaryStructuredCommentary":
-        for side_name, plan in (("white_plan", self.white_plan), ("black_plan", self.black_plan)):
+        for side_name, plan in (
+            ("white_plan", self.white_plan),
+            ("black_plan", self.black_plan),
+        ):
             if len(plan) != 2:
                 raise ValueError(f"{side_name} must contain exactly 2 bullet points")
             for entry in plan:
@@ -652,31 +743,49 @@ class CommentaryAnalysisCompleteEvent(APIModel):
     """Final completion event for Commentary commentary stream."""
 
     type: Literal["commentary_complete"] = "commentary_complete"
-    analysis_id: str = Field(description="Server-generated Commentary analysis session id.")
+    analysis_id: str = Field(
+        description="Server-generated Commentary analysis session id."
+    )
     text: str = Field(description="Final accumulated completion text.")
     structured: CommentaryStructuredCommentary | None = Field(
         default=None,
         description="Optional structured commentary parsed from model JSON output.",
     )
-    stop_reason: str | None = Field(default=None, description="Provider stop reason, if available.")
-    usage: CommentaryUsageStats | None = Field(default=None, description="Optional provider usage metrics.")
-    latency_ms: int | None = Field(default=None, ge=0, description="Provider-reported latency in milliseconds.")
-    generated_at: datetime = Field(description="UTC timestamp when stream completion was emitted.")
+    stop_reason: str | None = Field(
+        default=None, description="Provider stop reason, if available."
+    )
+    usage: CommentaryUsageStats | None = Field(
+        default=None, description="Optional provider usage metrics."
+    )
+    latency_ms: int | None = Field(
+        default=None, ge=0, description="Provider-reported latency in milliseconds."
+    )
+    generated_at: datetime = Field(
+        description="UTC timestamp when stream completion was emitted."
+    )
 
 
 class CommentaryAnalysisErrorEvent(APIModel):
     """Error event for Commentary commentary stream failures."""
 
     type: Literal["commentary_error"] = "commentary_error"
-    analysis_id: str | None = Field(default=None, description="Commentary analysis session id if available.")
+    analysis_id: str | None = Field(
+        default=None, description="Commentary analysis session id if available."
+    )
     code: str = Field(description="Stable error code identifier.")
     message: str = Field(description="Human-readable error message.")
-    retryable: bool = Field(default=False, description="Whether client may retry with same parameters.")
-    generated_at: datetime = Field(description="UTC timestamp when error event was emitted.")
+    retryable: bool = Field(
+        default=False, description="Whether client may retry with same parameters."
+    )
+    generated_at: datetime = Field(
+        description="UTC timestamp when error event was emitted."
+    )
 
 
 CommentaryAnalysisStreamEvent = Annotated[
-    CommentaryTextDeltaEvent | CommentaryAnalysisCompleteEvent | CommentaryAnalysisErrorEvent,
+    CommentaryTextDeltaEvent
+    | CommentaryAnalysisCompleteEvent
+    | CommentaryAnalysisErrorEvent,
     Field(discriminator="type"),
 ]
 
@@ -753,16 +862,30 @@ class RecentGameSummary(APIModel):
         default="unknown",
         description="Outcome for the authenticated player.",
     )
-    opponent_name: str | None = Field(default=None, description="Opponent username, if known.")
-    opponent_rating: int | None = Field(default=None, description="Opponent rating, if available.")
+    opponent_name: str | None = Field(
+        default=None, description="Opponent username, if known."
+    )
+    opponent_rating: int | None = Field(
+        default=None, description="Opponent rating, if available."
+    )
     rated: bool | None = Field(default=None, description="Whether the game was rated.")
-    speed: str | None = Field(default=None, description="Lichess speed key (blitz, rapid, etc).")
+    speed: str | None = Field(
+        default=None, description="Lichess speed key (blitz, rapid, etc)."
+    )
     perf: str | None = Field(default=None, description="Lichess performance category.")
     variant: str | None = Field(default=None, description="Variant key.")
-    status: str | None = Field(default=None, description="Terminal status from Lichess.")
-    winner: Literal["white", "black"] | None = Field(default=None, description="Winning side, if any.")
-    created_at: datetime | None = Field(default=None, description="Game creation timestamp (UTC).")
-    last_move_at: datetime | None = Field(default=None, description="Last move timestamp (UTC).")
+    status: str | None = Field(
+        default=None, description="Terminal status from Lichess."
+    )
+    winner: Literal["white", "black"] | None = Field(
+        default=None, description="Winning side, if any."
+    )
+    created_at: datetime | None = Field(
+        default=None, description="Game creation timestamp (UTC)."
+    )
+    last_move_at: datetime | None = Field(
+        default=None, description="Last move timestamp (UTC)."
+    )
     preview_fens: list[str] = Field(
         default_factory=list,
         description=(
@@ -817,7 +940,9 @@ class AccountInfo(APIModel):
         default_factory=dict,
         description="Performance ratings by time control.",
     )
-    disabled: bool | None = Field(default=None, description="Whether the account is disabled.")
+    disabled: bool | None = Field(
+        default=None, description="Whether the account is disabled."
+    )
 
 
 class PlayerSummary(APIModel):
